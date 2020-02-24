@@ -21,16 +21,24 @@ class ViewController: UIViewController {
         self.collectionView.delegate = self
         (self.collectionView.collectionViewLayout as! LiveRailCollectionViewLayout).delegate = self
         
-        self.collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
+//        self.collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
         
-
         self.collectionView.isDirectionalLockEnabled = true
+        
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        self.collectionView.contentOffset = CGPoint.init(x: 100, y: 0)
     }
 }
 
+
+
 extension ViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "imageCell", for: indexPath)
         cell.layer.borderColor = UIColor.red.cgColor
         cell.layer.borderWidth = 1
         
@@ -53,7 +61,7 @@ extension ViewController: UICollectionViewDataSource {
 
 extension ViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 100, height:100)
+        return CGSize(width: 300, height:100)
     }
 }
 
@@ -61,13 +69,13 @@ extension ViewController: LiveRailCollectionViewDelegateLayout {
     func collectionView(_ collectionView: UICollectionView,
                         layout: LiveRailCollectionViewLayout,
                         sizeAtIndexPath indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 100, height: 100)
+        return CGSize(width: 200, height: 100)
     }
 
     func collectionView(_ collectionView: UICollectionView,
                         layout: LiveRailCollectionViewLayout,
                         insetsForItemAtIndexPath: IndexPath) -> UIEdgeInsets {
-        return UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        return UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
     }
 
 }
@@ -76,7 +84,7 @@ extension ViewController: UIScrollViewDelegate {
    
     enum ScrollDirection : Int {
         case none
-        case crazy
+        case diagonal
         case left
         case right
         case up
@@ -93,7 +101,7 @@ extension ViewController: UIScrollViewDelegate {
         // called ScrollDirectionCrazy
 
         if initialContentOffset.x != scrollView.contentOffset.x && initialContentOffset.y != scrollView.contentOffset.y {
-            scrollDirection = .crazy
+            scrollDirection = .diagonal
         } else {
             if initialContentOffset.x > (scrollView.contentOffset.x) {
                 scrollDirection = .left
@@ -136,6 +144,7 @@ extension ViewController: UIScrollViewDelegate {
             print("Scrolling direction: vertical")
         } else if scrollDirection == .horizontal {
             print("Scrolling direction: horizontal")
+            
         } else {
             var newOffset: CGPoint = CGPoint.zero
             if abs(scrollView.contentOffset.x) > abs(scrollView.contentOffset.y) {
@@ -148,10 +157,11 @@ extension ViewController: UIScrollViewDelegate {
             // directional lock, that allows you to scroll in only one direction at any given time
             scrollView.contentOffset = newOffset
             print("*** set content offset")
-//            var scrollBounds = scrollView.bounds;
-//            scrollBounds.origin = newOffset;
-//            scrollView.bounds = scrollBounds;
         }
+    }
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        print("scrollViewDidEndDragging decelerate = \(decelerate)")
     }
 }
 
