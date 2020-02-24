@@ -19,7 +19,7 @@
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="8f6-Jj-uOI">
                                 <rect key="frame" x="0.0" y="44" width="414" height="818"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                                <collectionViewLayout key="collectionViewLayout" id="Tnb-tW-qPY" customClass="LiveRailCollectionViewLayout" customModule="collectionViewPOC" customModuleProvider="target"/>
+                                <collectionViewLayout key="collectionViewLayout" id="XoX-P0-8R6" customClass="LiveRailCollectionViewLayout" customModule="collectionViewPOC" customModuleProvider="target"/>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="NV6-w8-6Bu">
                                         <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>

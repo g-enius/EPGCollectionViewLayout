@@ -32,7 +32,7 @@ class LiveRailCollectionViewLayout: UICollectionViewLayout {
             return 0
         }
         
-        return collectionView.bounds.height - (collectionView.contentInset.top + collectionView.contentInset.bottom)
+        return (collectionView.bounds.height - (collectionView.contentInset.top + collectionView.contentInset.bottom)) * 2
     }
     
     // 3. This will be calculated in Prepare()
