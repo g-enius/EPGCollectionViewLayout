@@ -130,40 +130,40 @@ class LiveRailCollectionViewLayout: UICollectionViewLayout {
     }
     
     
-    
-    private var previousOffset: CGFloat = 0
-    private var currentPage: Int = 1
-
-    override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint, withScrollingVelocity velocity: CGPoint) -> CGPoint {
-        guard let collectionView = collectionView else {
-            return super.targetContentOffset(forProposedContentOffset: proposedContentOffset, withScrollingVelocity: velocity)
-        }
-
-        if abs(velocity.y) > abs(velocity.x) {
-            return proposedContentOffset;
-        }
-//        let itemsCount = collectionView.numberOfItems(inSection: 0)
-
-        // Imitating paging behaviour
-        // Check previous offset and scroll direction
-        if previousOffset >= collectionView.contentOffset.x && velocity.x <= 0 {
-            currentPage = max(currentPage - 1, 0)
-        } else if previousOffset <= collectionView.contentOffset.x && velocity.x >= 0 {
-            currentPage = min(currentPage + 1, 11)
-        }
-        
-        print("*** currentPage = \(currentPage)")
-//        print("*** proposedContentOffset.y = \(proposedContentOffset.y)")
-        var initialOffset = CGFloat.init(0)
-
-        if currentPage > 0 && currentPage <= 10 {
-            initialOffset = CGFloat.init(-40)
-        }
-
-        // Update offset by using item size + spacing
-        let updatedOffset = initialOffset + (itemSize.width + itemInset.left + itemInset.right) * CGFloat(currentPage)
-        previousOffset = updatedOffset
-
-        return CGPoint(x: updatedOffset, y: proposedContentOffset.y)
-    }
+//    
+//    private var previousOffset: CGFloat = 0
+//    private var currentPage: Int = 1
+//
+//    override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint, withScrollingVelocity velocity: CGPoint) -> CGPoint {
+//        guard let collectionView = collectionView else {
+//            return super.targetContentOffset(forProposedContentOffset: proposedContentOffset, withScrollingVelocity: velocity)
+//        }
+//
+//        if abs(velocity.y) > abs(velocity.x) {
+//            return proposedContentOffset;
+//        }
+////        let itemsCount = collectionView.numberOfItems(inSection: 0)
+//
+//        // Imitating paging behaviour
+//        // Check previous offset and scroll direction
+//        if previousOffset >= collectionView.contentOffset.x && velocity.x <= 0 {
+//            currentPage = max(currentPage - 1, 0)
+//        } else if previousOffset <= collectionView.contentOffset.x && velocity.x >= 0 {
+//            currentPage = min(currentPage + 1, 11)
+//        }
+//        
+//        print("*** currentPage = \(currentPage)")
+////        print("*** proposedContentOffset.y = \(proposedContentOffset.y)")
+//        var initialOffset = CGFloat.init(0)
+//
+//        if currentPage > 0 && currentPage <= 10 {
+//            initialOffset = CGFloat.init(-40)
+//        }
+//
+//        // Update offset by using item size + spacing
+//        let updatedOffset = initialOffset + (itemSize.width + itemInset.left + itemInset.right) * CGFloat(currentPage)
+//        previousOffset = updatedOffset
+//
+//        return CGPoint(x: updatedOffset, y: proposedContentOffset.y)
+//    }
 }
