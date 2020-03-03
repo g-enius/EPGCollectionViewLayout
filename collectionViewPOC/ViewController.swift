@@ -20,17 +20,23 @@ class ViewController: UIViewController {
         self.collectionView.dataSource = self
         self.collectionView.delegate = self
         (self.collectionView.collectionViewLayout as! LiveRailCollectionViewLayout).delegate = self
-        
-//        self.collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
+//        (self.collectionView.collectionViewLayout as! YourCollectionLayoutSubclass).scrollDirection = .horizontal
+
+        self.collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
         
         self.collectionView.isDirectionalLockEnabled = true
         
+        self.collectionView.isPagingEnabled = false
+        
+//        self.collectionView.alwaysBounceHorizontal = false
+//        self.collectionView.alwaysBounceVertical = false
+//        
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        self.collectionView.contentOffset = CGPoint.init(x: 100, y: 0)
+        self.collectionView.contentOffset = CGPoint.init(x: 260, y: 0)
     }
 }
 
@@ -61,7 +67,7 @@ extension ViewController: UICollectionViewDataSource {
 
 extension ViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 300, height:100)
+        return CGSize(width: 300, height: 100)
     }
 }
 
@@ -69,7 +75,7 @@ extension ViewController: LiveRailCollectionViewDelegateLayout {
     func collectionView(_ collectionView: UICollectionView,
                         layout: LiveRailCollectionViewLayout,
                         sizeAtIndexPath indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 200, height: 100)
+        return CGSize(width: 300, height: 100)
     }
 
     func collectionView(_ collectionView: UICollectionView,
@@ -137,13 +143,13 @@ extension ViewController: UIScrollViewDelegate {
     }
        
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        print("*** scrollViewDidScroll called")
+//        print("*** scrollViewDidScroll called")
         let scrollDirection = determineScrollDirectionAxis(scrollView)
        
         if scrollDirection == .vertical {
-            print("Scrolling direction: vertical")
+//            print("Scrolling direction: vertical")
         } else if scrollDirection == .horizontal {
-            print("Scrolling direction: horizontal")
+//            print("Scrolling direction: horizontal")
             
         } else {
             var newOffset: CGPoint = CGPoint.zero
@@ -156,12 +162,12 @@ extension ViewController: UIScrollViewDelegate {
             // Setting the new offset to the scrollView makes it behave like a proper
             // directional lock, that allows you to scroll in only one direction at any given time
             scrollView.contentOffset = newOffset
-            print("*** set content offset")
+//            print("*** set content offset")
         }
     }
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        print("scrollViewDidEndDragging decelerate = \(decelerate)")
+//        print("scrollViewDidEndDragging decelerate = \(decelerate)")
     }
 }
 
