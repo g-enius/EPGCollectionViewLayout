@@ -9,6 +9,11 @@
 import UIKit
 
 class ViewController: UIViewController {
+    
+    let numberOfColumns = 3
+    let numberOfRows = 13
+    let itemWidth = CGFloat(300)
+    let itemHeight = CGFloat(100)
 
     @IBOutlet weak var collectionView: UICollectionView!
     
@@ -42,15 +47,6 @@ class ViewController: UIViewController {
     
 
 
-    private func indexOfMajorCell() -> Int {
-        let itemWidth = CGFloat(300)
-        print("collectionView.contentOffset.x = \(collectionView.contentOffset.x)")
-        let proportionalOffset = collectionView.contentOffset.x / itemWidth
-        let index = Int(round(proportionalOffset))
-        let numberOfItems = collectionView.numberOfItems(inSection: 0)
-        let safeIndex = max(0, min(numberOfItems - 1, index))
-        return safeIndex
-    }
 }
 
 
@@ -74,13 +70,13 @@ extension ViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 150
+        return 40
     }
 }
 
 extension ViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 300, height: 100)
+        return CGSize(width: itemWidth, height: itemHeight)
     }
 }
 
@@ -88,7 +84,7 @@ extension ViewController: LiveRailCollectionViewDelegateLayout {
     func collectionView(_ collectionView: UICollectionView,
                         layout: LiveRailCollectionViewLayout,
                         sizeAtIndexPath indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 300, height: 100)
+        return CGSize(width: itemWidth, height: itemHeight)
     }
 
     func collectionView(_ collectionView: UICollectionView,
@@ -151,6 +147,25 @@ extension ViewController: UIScrollViewDelegate {
         }
     }
     
+    
+    
+    private func indexOfMajorCell() -> Int {
+           print("collectionView.contentOffset.x = \(collectionView.contentOffset.x)")
+
+           let proportionalOffset = collectionView.contentOffset.x / itemWidth
+           let index = Int(round(proportionalOffset))
+           
+           print("index = \(index)")
+           let numberOfItems = collectionView.numberOfItems(inSection: 0)
+
+           let safeIndex = max(0, min(numberOfItems - 1, index * numberOfRows))
+           
+           print("safeIndex = \(safeIndex)")
+
+           return safeIndex
+       }
+    
+    
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
 //        initialContentOffset = scrollView.contentOffset
         
@@ -165,16 +180,16 @@ extension ViewController: UIScrollViewDelegate {
 
     
     func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-//        print("*** scrollViewDidScroll called")
-//        let scrollDirection = determineScrollDirectionAxis(scrollView)
-//
-//        if scrollDirection == .vertical {
-////            print("Scrolling direction: vertical")
-//        } else if scrollDirection == .horizontal {
-////            print("Scrolling direction: horizontal")
+        print("*** scrollViewDidScroll called")
+        let scrollDirection = determineScrollDirectionAxis(scrollView)
+
+        if scrollDirection == .vertical {
+//            print("Scrolling direction: vertical")
+        } else if scrollDirection == .horizontal {
+//            print("Scrolling direction: horizontal")
 //
 
-            // Stop scrollView sliding:
+     // Stop scrollView sliding:
             targetContentOffset.pointee = scrollView.contentOffset
 
             // calculate where scrollView should snap to:
@@ -182,16 +197,22 @@ extension ViewController: UIScrollViewDelegate {
 
             // calculate conditions:
             let dataSourceCount = collectionView(collectionView!, numberOfItemsInSection: 0)
+    //        let numberOfColumn = 4
+
+            
             let swipeVelocityThreshold: CGFloat = 0.5 // after some trail and error
-            let hasEnoughVelocityToSlideToTheNextCell = indexOfCellBeforeDragging + 1 < dataSourceCount && velocity.x > swipeVelocityThreshold
-            let hasEnoughVelocityToSlideToThePreviousCell = indexOfCellBeforeDragging - 1 >= 0 && velocity.x < -swipeVelocityThreshold
+            let hasEnoughVelocityToSlideToTheNextCell = indexOfCellBeforeDragging + numberOfRows < dataSourceCount && velocity.x > swipeVelocityThreshold
+            let hasEnoughVelocityToSlideToThePreviousCell = indexOfCellBeforeDragging - numberOfRows >= 0 && velocity.x < -swipeVelocityThreshold
             let majorCellIsTheCellBeforeDragging = indexOfMajorCell == indexOfCellBeforeDragging
             let didUseSwipeToSkipCell = majorCellIsTheCellBeforeDragging && (hasEnoughVelocityToSlideToTheNextCell || hasEnoughVelocityToSlideToThePreviousCell)
 
             if didUseSwipeToSkipCell {
+                print("indexOfCellBeforeDragging = \(indexOfCellBeforeDragging)")
+                let snapToIndex = indexOfCellBeforeDragging + (hasEnoughVelocityToSlideToTheNextCell ? numberOfRows : -numberOfRows)
+                print("snapToIndex = \(snapToIndex)")
 
-                let snapToIndex = indexOfCellBeforeDragging + (hasEnoughVelocityToSlideToTheNextCell ? 1 : -1)
-                let toValue = CGFloat(300) * CGFloat(snapToIndex)
+                let toValue = 300 * CGFloat(snapToIndex/numberOfRows)
+                print("toValue = \(toValue)")
 
                 // Damping equal 1 => no oscillations => decay animation:
                 UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: velocity.x, options: .allowUserInteraction, animations: {
@@ -207,20 +228,20 @@ extension ViewController: UIScrollViewDelegate {
             
             
             
-//        } else {
-//            var newOffset: CGPoint = CGPoint.zero
-//            if abs(scrollView.contentOffset.x) > abs(scrollView.contentOffset.y) {
-//                newOffset = CGPoint.init(x: scrollView.contentOffset.x, y: initialContentOffset.y)
-//
-//            } else {
-//                newOffset = CGPoint.init(x: initialContentOffset.x, y: scrollView.contentOffset.y)
-//            }
+        } else {
+            var newOffset: CGPoint = CGPoint.zero
+            if abs(scrollView.contentOffset.x) > abs(scrollView.contentOffset.y) {
+                newOffset = CGPoint.init(x: scrollView.contentOffset.x, y: initialContentOffset.y)
+
+            } else {
+                newOffset = CGPoint.init(x: initialContentOffset.x, y: scrollView.contentOffset.y)
+            }
             
-            // Setting the new offset to the scrollView makes it behave like a proper
-            // directional lock, that allows you to scroll in only one direction at any given time
-//            scrollView.contentOffset = newOffset
-//            print("*** set content offset")
-//        }
+//             Setting the new offset to the scrollView makes it behave like a proper
+//             directional lock, that allows you to scroll in only one direction at any given time
+            scrollView.contentOffset = newOffset
+            print("*** set content offset")
+        }
         
            
        }
