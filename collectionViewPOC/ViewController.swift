@@ -10,8 +10,8 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    let numberOfColumns = 3
-    let numberOfRows = 13
+    let numberOfColumns = 11
+    let numberOfRows = 14
     let itemWidth = CGFloat(300)
     let itemHeight = CGFloat(100)
 
@@ -26,26 +26,21 @@ class ViewController: UIViewController {
         self.collectionView.dataSource = self
         self.collectionView.delegate = self
         (self.collectionView.collectionViewLayout as! LiveRailCollectionViewLayout).delegate = self
-//        (self.collectionView.collectionViewLayout as! YourCollectionLayoutSubclass).scrollDirection = .horizontal
 
         self.collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
         
         self.collectionView.isDirectionalLockEnabled = true
         
         self.collectionView.isPagingEnabled = false
-        
-//        self.collectionView.alwaysBounceHorizontal = false
-//        self.collectionView.alwaysBounceVertical = false
-//        
+
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-//        self.collectionView.contentOffset = CGPoint.init(x: 260, y: 0)
+        self.collectionView.contentInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
+//        self.collectionView.contentOffset = CGPoint(x: 200, y: 0)
     }
-    
-
 
 }
 
@@ -70,8 +65,9 @@ extension ViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 40
+        return 150
     }
+    
 }
 
 extension ViewController: UICollectionViewDelegateFlowLayout {
@@ -90,7 +86,7 @@ extension ViewController: LiveRailCollectionViewDelegateLayout {
     func collectionView(_ collectionView: UICollectionView,
                         layout: LiveRailCollectionViewLayout,
                         insetsForItemAtIndexPath: IndexPath) -> UIEdgeInsets {
-        return UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
+        return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     }
 
 }
@@ -167,29 +163,47 @@ extension ViewController: UIScrollViewDelegate {
     
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-//        initialContentOffset = scrollView.contentOffset
+        initialContentOffset = scrollView.contentOffset
         
         indexOfCellBeforeDragging = indexOfMajorCell()
 
     }
        
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-
-    }
-
-
-    
-    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-        print("*** scrollViewDidScroll called")
+//        print("*** scrollViewDidScroll called")
         let scrollDirection = determineScrollDirectionAxis(scrollView)
 
         if scrollDirection == .vertical {
-//            print("Scrolling direction: vertical")
+//            print("Scrolling direction: vertical \(scrollView.contentOffset)")
         } else if scrollDirection == .horizontal {
-//            print("Scrolling direction: horizontal")
-//
+//            print("Scrolling direction: horizontal \(scrollView.contentOffset)")
+        } else {
+            print("Scrolling direction: scrollDirection \(scrollDirection) \(scrollView.contentOffset)")
 
-     // Stop scrollView sliding:
+            var newOffset: CGPoint = CGPoint.zero
+            if abs(scrollView.contentOffset.x) > abs(scrollView.contentOffset.y) {
+                newOffset = CGPoint.init(x: scrollView.contentOffset.x, y: initialContentOffset.y)
+
+            } else {
+                newOffset = CGPoint.init(x: initialContentOffset.x, y: scrollView.contentOffset.y)
+            }
+            
+//             Setting the new offset to the scrollView makes it behave like a proper
+//             directional lock, that allows you to scroll in only one direction at any given time            
+            var scrollBounds = scrollView.bounds
+            scrollBounds.origin = newOffset
+            scrollView.bounds = scrollBounds;
+
+            print("*** set content offset \(newOffset)")
+        }
+    }
+
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        print("*** scrollViewWillEndDragging called")
+        let scrollDirection = determineScrollDirectionAxis(scrollView)
+
+        if scrollDirection == .horizontal || scrollDirection == .none {
+            // Stop scrollView sliding:
             targetContentOffset.pointee = scrollView.contentOffset
 
             // calculate where scrollView should snap to:
@@ -197,8 +211,6 @@ extension ViewController: UIScrollViewDelegate {
 
             // calculate conditions:
             let dataSourceCount = collectionView(collectionView!, numberOfItemsInSection: 0)
-    //        let numberOfColumn = 4
-
             
             let swipeVelocityThreshold: CGFloat = 0.5 // after some trail and error
             let hasEnoughVelocityToSlideToTheNextCell = indexOfCellBeforeDragging + numberOfRows < dataSourceCount && velocity.x > swipeVelocityThreshold
@@ -225,25 +237,7 @@ extension ViewController: UIScrollViewDelegate {
                 let indexPath = IndexPath(row: indexOfMajorCell, section: 0)
                 collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
             }
-            
-            
-            
-        } else {
-            var newOffset: CGPoint = CGPoint.zero
-            if abs(scrollView.contentOffset.x) > abs(scrollView.contentOffset.y) {
-                newOffset = CGPoint.init(x: scrollView.contentOffset.x, y: initialContentOffset.y)
-
-            } else {
-                newOffset = CGPoint.init(x: initialContentOffset.x, y: scrollView.contentOffset.y)
-            }
-            
-//             Setting the new offset to the scrollView makes it behave like a proper
-//             directional lock, that allows you to scroll in only one direction at any given time
-            scrollView.contentOffset = newOffset
-            print("*** set content offset")
         }
-        
-           
-       }
+    }
 }
 
