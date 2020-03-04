@@ -163,7 +163,7 @@ extension ViewController: UIScrollViewDelegate {
         let scrollDirection = determineScrollDirectionAxis(scrollView)
         print("*** scrollViewWillBeginDragging called scrollDirection = \(scrollDirection)")
 
-        if scrollDirection == .horizontal {
+        if scrollDirection == .horizontal || scrollDirection == .none {
             indexOfCellBeforeDragging = indexOfMajorCell()
         }
     }
@@ -200,7 +200,7 @@ extension ViewController: UIScrollViewDelegate {
         let scrollDirection = determineScrollDirectionAxis(scrollView)
         print("*** scrollViewWillEndDragging called scrollDirection = \(scrollDirection)")
 
-        if scrollDirection == .horizontal {
+        if scrollDirection == .horizontal || scrollDirection == .none {
             // Stop scrollView sliding:
             targetContentOffset.pointee = scrollView.contentOffset
 
@@ -221,7 +221,7 @@ extension ViewController: UIScrollViewDelegate {
                 let snapToIndex = indexOfCellBeforeDragging + (hasEnoughVelocityToSlideToTheNextCell ? numberOfRows : -numberOfRows)
                 print("snapToIndex = \(snapToIndex)")
 
-                let toValue = itemWidth * CGFloat(snapToIndex/numberOfRows)
+                let toValue = itemWidth * CGFloat(snapToIndex/numberOfRows) - collectionView.contentInset.left
                 print("toValue = \(toValue)")
 
                 // Damping equal 1 => no oscillations => decay animation:
@@ -233,6 +233,8 @@ extension ViewController: UIScrollViewDelegate {
             } else {
                 // This is a much better way to scroll to a cell:
                 let indexPath = IndexPath(row: indexOfMajorCell, section: 0)
+                print("scrollToItem \(indexPath)")
+
                 collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
             }
         }
