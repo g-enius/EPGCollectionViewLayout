@@ -1,5 +1,5 @@
 //
-//  LiveRailCollectionViewLayout.swift
+//  EPGCollectionViewLayout.swift
 //  collectionViewPOC
 //
 //  Created by Charles on 13/02/20.
@@ -8,23 +8,24 @@
 
 import UIKit
 
-protocol LiveRailCollectionViewDelegateLayout: class {
+protocol EPGCollectionViewDelegateLayout: class {
     func collectionView(_ collectionView: UICollectionView,
-                        layout: LiveRailCollectionViewLayout,
+                        layout: EPGCollectionViewLayout,
                         sizeAtIndexPath indexPath: IndexPath) -> CGSize
     
     func collectionView(_ collectionView: UICollectionView,
-                        layout: LiveRailCollectionViewLayout,
+                        layout: EPGCollectionViewLayout,
                         insetsForItemAtIndexPath: IndexPath) -> UIEdgeInsets
 }
 
-class LiveRailCollectionViewLayout: UICollectionViewLayout {
+class EPGCollectionViewLayout: UICollectionViewLayout {
 
+    var numberOfRows: Int!
     // 1. cachedAttributes
     /// This is to store the calculated UICollectionViewLayoutAtributes
     private var cachedAttributes: [UICollectionViewLayoutAttributes] = []
     
-    weak var delegate: LiveRailCollectionViewDelegateLayout?
+    weak var delegate: EPGCollectionViewDelegateLayout?
     
     // 2. contentWidth
     private var contentHeight: CGFloat {
@@ -76,8 +77,8 @@ class LiveRailCollectionViewLayout: UICollectionViewLayout {
         cachedAttributes.removeAll()
         
         // 2. Set the origin
-        var xOrigin: CGFloat = collectionView.contentInset.left
-        var yOrigin: CGFloat = collectionView.contentInset.top
+        var xOrigin: CGFloat = 0
+        var yOrigin: CGFloat = 0
         
         // 3. Here, we assume that we have only one section
         // you can handle multiple section like
@@ -105,7 +106,7 @@ class LiveRailCollectionViewLayout: UICollectionViewLayout {
             cachedAttributes.append(attributes)
             
             // 10. update the contentWidth
-            contentWidth = max(contentWidth, xOrigin + itemSize.width + collectionView.contentInset.right)
+            contentWidth = max(contentWidth, xOrigin + itemSize.width)
         }
     }
     
